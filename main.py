@@ -12,19 +12,43 @@ user_steps = {}
 user_data = {}
 user_language = {}
 
-# Test to'plamlari va ularning savollari (namuna uchun qisqaroq ro'yxat)
+# Test packs with all questions
 test_packs = {
-    "CEFR (10 ta test)": [
+    "CEFR": [
         {"question": "أنا من ــــــ.", "options": ["فرنسا", "أمريكا", "ألمانيا", "مصر"], "answer": "b"},
         {"question": "أنا ــــــ.", "options": ["طالب", "فرنسي", "طبيبة", "مهندس"], "answer": "b"},
-        # Qo'shimcha savollar shu yerda...
+        {"question": "هو ــــــ أحمد.", "options": ["يعمل", "اسمه", "عنده", "يسكن"], "answer": "b"},
+        {"question": "ــــــ أنت فرنسي؟", "options": ["ما", "هل", "لماذا", "أين"], "answer": "b"},
+        {"question": "فاطمة ــــــ ولد.", "options": ["عندها", "عنده", "لديها", "عندهما"], "answer": "a"},
     ],
-    "AT Tanal AL Arabi (20 ta test)": [
+    "AT Tanal AL Arabi": [
+        {"question": "أحمد ــــــ ولد وبنت.", "options": ["عندها", "عنده", "لدي", "لديهما"], "answer": "b"},
+        {"question": "بيت أحمد ــــــ.", "options": ["صغير", "جميل", "كبير", "جديد"], "answer": "c"},
+        {"question": "ــــــ بيت صغير.", "options": ["هذه", "هذا", "هؤلاء", "هنا"], "answer": "b"},
+        {"question": "ــــــ عندي سيارة.", "options": ["لا", "ليس", "لم", "لن"], "answer": "b"},
+        {"question": "محمد ــــــ في الجامعة.", "options": ["يدرس", "يعمل", "يسكن", "يذهب"], "answer": "b"},
+    ],
+    "The Arabic Language Proficiency Test": [
         {"question": "سوزان تسكن ــــــ القاهرة.", "options": ["إلى", "في", "على", "مع"], "answer": "b"},
         {"question": "ــــــ تذهب إلى الجامعة كل يوم.", "options": ["هو", "فاطمة", "أنت", "نحن"], "answer": "b"},
-        # Qo'shimcha savollar shu yerda...
+        {"question": "ــــــ تذهب إلى الجامعة؟", "options": ["أين", "كيف", "متى", "لماذا"], "answer": "c"},
+        {"question": "أحمد ذهب إلى الجامعة ــــــ.", "options": ["غدًا", "أمس", "الآن", "سابقًا"], "answer": "b"},
+        {"question": "فاطمة ستزور سوزان ــــــ.", "options": ["البارحة", "غدًا", "اليوم", "أمس"], "answer": "b"},
     ],
-    # Boshqa test to'plamlari
+    "Arabic Proficiency Test": [
+        {"question": "أنا أعود ــــــ البيت الساعة الخامسة.", "options": ["من", "إلى", "في", "عن"], "answer": "b"},
+        {"question": "زار صديقه ــــــ ذهب إلى السوق.", "options": ["قبل أن", "بعد أن", "حينما", "لأن"], "answer": "b"},
+        {"question": "سأنام بعد أن ــــــ الفيلم.", "options": ["شاهدت", "أشاهد", "سأشاهد", "مشاهدة"], "answer": "b"},
+        {"question": "أريد ــــــ أشتري سيارة جديدة.", "options": ["حتى", "أن", "لأن", "لكن"], "answer": "b"},
+        {"question": "هم يحبون أن ــــــ اللغة العربية.", "options": ["يدرس", "يدرسوا", "دراسة", "درسوا"], "answer": "b"},
+    ],
+    "American Council on the Teaching of Foreign Languages (ACTFL)": [
+        {"question": "نمت مبكرًا ــــــ أصحو مبكرًا.", "options": ["لأن", "حتى", "لكي", "إذا"], "answer": "c"},
+        {"question": "كنت طالبًا وــــــ مدرسًا.", "options": ["صرت", "أصبحت", "ظللت", "عدت"], "answer": "b"},
+        {"question": "قرأت أربعة ــــــ خلال الإجازة.", "options": ["كتاب", "كتب", "كتابًا", "كُتُبًا"], "answer": "b"},
+        {"question": "غادرت القاهرة ولم ــــــ أسكن فيها.", "options": ["أعد", "أعود", "أرجع", "أذهب"], "answer": "a"},
+        {"question": "بدأت العمل ــــــ.", "options": ["مسرورًا", "سعيد", "فرحان", "السرور"], "answer": "a"},
+    ]
 }
 
 def language_keyboard():
@@ -128,7 +152,9 @@ def language_selected(message):
 @bot.message_handler(func=lambda m: m.text in ["📝 Testni boshlash", "📝 Начать тест"])
 def start_test_menu(message):
     if user_language.get(message.chat.id) in ["uz", "ru"]:
-        bot.send_message(message.chat.id, "Test to‘plamini tanlang:" if user_language[message.chat.id] == "uz" else "Выберите тест:", reply_markup=tests_menu())
+        bot.send_message(message.chat.id, 
+                         "Test to'plamini tanlang:" if user_language[message.chat.id] == "uz" else "Выберите тест:", 
+                         reply_markup=tests_menu())
     else:
         bot.send_message(message.chat.id, "Iltimos, tilni tanlang.", reply_markup=language_keyboard())
 
@@ -160,14 +186,14 @@ def send_question(chat_id):
     current_q = data["current_q"]
 
     if current_q >= len(questions):
-        # Test yakunlandi
+        # Test completed
         score = data["score"]
         total = len(questions)
         level, percent = calculate_level(score, total)
 
         if user_language.get(chat_id) == "uz":
             text = (f"Test yakunlandi.\n"
-                    f"To‘g‘ri javoblar: {score} / {total}\n"
+                    f"To'g'ri javoblar: {score} / {total}\n"
                     f"Sizning darajangiz: {level}")
         else:
             text = (f"Тест завершен.\n"
@@ -176,7 +202,7 @@ def send_question(chat_id):
 
         bot.send_message(chat_id, text)
 
-        # Sertifikat yaratish va yuborish (faqat agar foydalanuvchi ismi bor bo‘lsa)
+        # Generate certificate
         try:
             user_name = bot.get_chat(chat_id).first_name or "User"
         except:
@@ -185,7 +211,7 @@ def send_question(chat_id):
         cert_pdf = generate_certificate(user_name, score, total, level)
         bot.send_document(chat_id, cert_pdf, caption="Sertifikat / Сертификат")
 
-        # Test ma'lumotlarini tozalash
+        # Clear test data
         user_data.pop(chat_id, None)
         return
 
@@ -215,11 +241,11 @@ def answer_handler(message):
     if current_q >= len(questions):
         return
 
-    # Javobni tekshirish
+    # Check answer
     user_answer = message.text.lower().strip()
     correct_answer = questions[current_q]["answer"].lower()
 
-    # Foydalanuvchi javobi "a) ..." ko‘rinishda bo‘ladi, faqat harfni olish kerak
+    # Extract just the letter (a/b/c/d)
     if len(user_answer) > 0:
         user_answer = user_answer[0]
 
