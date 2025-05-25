@@ -2,7 +2,6 @@ import os
 from telebot import TeleBot, types
 
 bot = TeleBot(os.getenv("TELEGRAM_TOKEN"))
-
 user_language = {}
 
 # Til tanlash klaviaturasi
@@ -11,22 +10,20 @@ def language_keyboard():
     markup.add("🇺🇿 O‘zbekcha", "🇷🇺 Русский")
     return markup
 
-# O‘zbekcha asosiy menyu
+# O‘zbekcha menyu
 def main_menu_uz():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add("ℹ️ Universitet haqida", "📚 Ta’lim yo‘nalishlari")
-    markup.add("🎓 O‘quv tizimi", "💰 Grant va stipendiyalar")
-    markup.add("🌐 Hamkorlik", "📍Joylashuv")
-    markup.add("📞 Aloqa")
+    markup.add("🤖 Bot haqida", "🛠 Xizmatlar")
+    markup.add("🎓 Arab tili", "💎 Premium obuna")
+    markup.add("🧪 Test bo‘limi")
     return markup
 
-# Ruscha asosiy menyu
+# Ruscha menyu
 def main_menu_ru():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add("ℹ️ О университете", "📚 Направления обучения")
-    markup.add("🎓 Учебная система", "💰 Гранты и стипендии")
-    markup.add("🌐 Сотрудничество", "📍Расположение")
-    markup.add("📞 Связь")
+    markup.add("🤖 О боте", "🛠 Услуги")
+    markup.add("🎓 Арабский язык", "💎 Премиум подписка")
+    markup.add("🧪 Тестовый раздел")
     return markup
 
 @bot.message_handler(commands=['start'])
@@ -38,196 +35,116 @@ def start_command(message):
 def choose_language(message):
     if message.text == "🇺🇿 O‘zbekcha":
         user_language[message.chat.id] = "uz"
-        bot.send_message(message.chat.id, "Cyber University qabul botiga xush kelibsiz!\nKerakli bo‘limni tanlang:", reply_markup=main_menu_uz())
+        bot.send_message(message.chat.id, "Arabic Tester botiga xush kelibsiz!", reply_markup=main_menu_uz())
     else:
         user_language[message.chat.id] = "ru"
-        bot.send_message(message.chat.id, "Добро пожаловать в приемную комиссию Cyber University!\nВыберите раздел:", reply_markup=main_menu_ru())
+        bot.send_message(message.chat.id, "Добро пожаловать в бот Arabic Tester!", reply_markup=main_menu_ru())
 
 # O‘zbekcha bo‘limlar
 def uzbek_sections(message):
-    if message.text == "ℹ️ Universitet haqida":
+    if message.text == "🤖 Bot haqida":
         text = (
-            "⚙️ Cyber University — O‘zbekistonning raqamli kelajagiga yo‘l ochuvchi zamonaviy oliy ta’lim dargohi.\n\n"
-            "O‘zbekiston Respublikasi Prezidentining 2025-yil 20-yanvardagi PQ–14-sonli qaroriga asosan — Cyber University tashkil etildi.\n\n"
-            "Qarorni o‘qing! 🫵 https://lex.uz/uz/docs/-7332592\n\n"
-            "🫥 Asosiy maqsad:\n"
-            "Cyber University xalqaro raqobatbardosh, innovatsion fikrlovchi va amaliy ko‘nikmaga ega "
-            "Kiberxavfsizlik mutaxassislarini tayyorlashga yo‘naltirilgan."
+            "Bu bot Arab tili bo‘yicha test va o‘quv xizmatlarini taqdim etadi.\n"
+            "Darajalar, testlar va foydali manbalarni shu yerda topasiz."
         )
-        bot.send_message(message.chat.id, text)
-
-    elif message.text == "📚 Ta’lim yo‘nalishlari":
+    elif message.text == "🛠 Xizmatlar":
         text = (
-            "📚 *Bakalavriat yo‘nalishlari:*\n"
-            "- Kiberxavfsizlik injiniringi: tizimlarni himoya qilish, xavfsizlik strategiyalari.\n"
-            "- Kompyuter injiniringi: apparat va dasturiy ta'minotni yaratish.\n"
-            "- Dasturiy injiniring: dastur ishlab chiqish va testlash.\n"
-            "- Yurisprudensiya: kiber huquq va qonunchilik asoslari.\n"
-            "- Menejment: tashkilotlarni boshqarish.\n"
-            "- Iqtisodiyot: iqtisodiy tahlil va boshqaruv.\n\n"
-            "*Magistratura yo‘nalishlari:*\n"
-            "- Axborot xavfsizligi: ilg‘or xavfsizlik tizimlari.\n"
-            "- Kiber huquq: kiber jinoyatlar va qonunlar."
+            "Quyidagi xizmatlar mavjud:\n"
+            "- Arab tili bo‘yicha testlar\n"
+            "- Daraja asosidagi materiallar\n"
+            "- Online tarjimon"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "🎓 O‘quv tizimi":
+    elif message.text == "🎓 Arab tili":
         text = (
-            "🎓 *O‘quv jarayoni xususiyatlari:*\n"
-            "- 1 yil Foundation, 3 yil asosiy ta’lim\n"
-            "- Ta’lim to‘liq ingliz tilida\n"
-            "- Kredit-modul tizimi\n"
-            "- Amaliyot IT kompaniyalari va texnoparklarda"
+            "🎓 *Arab tili o‘quv tizimi:*\n"
+            "- A1-A2, B1-B2, C1-C2 darajalar\n"
+            "- Online testlar\n"
+            "- Kitoblar va lug‘at bo‘limi\n"
+            "- Tarjimon xizmatlari"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "💰 Grant va stipendiyalar":
+    elif message.text == "💎 Premium obuna":
         text = (
-            "💰 *Imkoniyatlar:*\n"
-            "- 2025/2026 o‘quv yili uchun 100 ta davlat granti\n"
-            "- Stipendiyalar: sanoat hamkorlari va Innovatsion rivojlanish kengashi orqali"
+            "💎 *Premium imkoniyatlari:*\n"
+            "- Maxsus testlarga kirish\n"
+            "- Statistikani ko‘rish\n"
+            "- Qo‘shimcha bo‘limlar"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "🌐 Hamkorlik":
+    elif message.text == "🧪 Test bo‘limi":
         text = (
-            "🌐 *Xalqaro hamkorlik:*\n"
-            "- AQSH, Xitoy, Yaponiya kabi davlatlar bilan\n"
-            "- Ilg‘or ta’lim dasturlari\n"
-            "- Xorijiy mutaxassislar jalb etiladi"
+            "🧪 Testlar bo‘limi:\n"
+            "- Boshlang‘ich (A1-A2)\n"
+            "- O‘rta (B1-B2)\n"
+            "- Yuqori (C1-C2)"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "📍Joylashuv":
-        bot.send_message(message.chat.id, "📍 Universitet: Toshkent viloyati, Nurafshon shahri.")
-
-    elif message.text == "📞 Aloqa":
-        bot.send_message(message.chat.id,
-                         "📞 Aloqa uchun:\n+998 (55) 888-55-55\n+998 95 182 71 17")
-
     else:
-        bot.send_message(message.chat.id, "Noto‘g‘ri buyruq. Menyudan tanlang yoki /help ni bering.")
+        text = "Noto‘g‘ri buyruq. Menyudan tanlang yoki /help ni yozing."
+    bot.send_message(message.chat.id, text, parse_mode="Markdown")
 
 # Ruscha bo‘limlar
 def russian_sections(message):
-    if message.text == "ℹ️ О университете":
+    if message.text == "🤖 О боте":
         text = (
-            "⚙️ Cyber University — современное высшее учебное заведение, открывающее путь в цифровое будущее Узбекистана.\n\n"
-            "Создан на основании распоряжения Президента Республики Узбекистан № PQ–14 от 20 января 2025 года.\n\n"
-            "Читайте распоряжение! 🫵 https://lex.uz/uz/docs/-7332592\n\n"
-            "🫥 Основная цель:\n"
-            "Подготовка международно конкурентоспособных, инновационно мыслящих и практико-ориентированных специалистов в области кибербезопасности."
+            "Этот бот предоставляет тесты и учебные ресурсы по арабскому языку.\n"
+            "Уровни, тесты и словари доступны здесь."
         )
-        bot.send_message(message.chat.id, text)
-
-    elif message.text == "📚 Направления обучения":
+    elif message.text == "🛠 Услуги":
         text = (
-            "📚 *Бакалавриат:*\n"
-            "- Инженерия кибербезопасности: защита систем и стратегия безопасности.\n"
-            "- Компьютерная инженерия: создание аппаратного и программного обеспечения.\n"
-            "- Программная инженерия: разработка и тестирование ПО.\n"
-            "- Юриспруденция: основы киберзаконов.\n"
-            "- Менеджмент: управление организациями.\n"
-            "- Экономика: экономический анализ и управление.\n\n"
-            "*Магистратура:*\n"
-            "- Информационная безопасность: продвинутые системы безопасности.\n"
-            "- Киберправо: киберпреступления и законодательство."
+            "Доступные услуги:\n"
+            "- Тесты по арабскому языку\n"
+            "- Учебные материалы\n"
+            "- Онлайн переводчик"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "🎓 Учебная система":
+    elif message.text == "🎓 Арабский язык":
         text = (
-            "🎓 *Особенности учебного процесса:*\n"
-            "- 1 год Foundation, 3 года основное обучение\n"
-            "- Обучение полностью на английском языке\n"
-            "- Кредитно-модульная система\n"
-            "- Практика в IT-компаниях и технопарках"
+            "🎓 *Система изучения арабского языка:*\n"
+            "- Уровни A1-A2, B1-B2, C1-C2\n"
+            "- Онлайн тесты\n"
+            "- Книги и словарь\n"
+            "- Переводчик"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "💰 Гранты и стипендии":
+    elif message.text == "💎 Премиум подписка":
         text = (
-            "💰 *Возможности:*\n"
-            "- 100 государственных грантов на 2025/2026 учебный год\n"
-            "- Стипендии от промышленных партнеров и Совета инновационного развития"
+            "💎 *Премиум функции:*\n"
+            "- Доступ к спец. тестам\n"
+            "- Просмотр статистики\n"
+            "- Новые разделы"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "🌐 Сотрудничество":
+    elif message.text == "🧪 Тестовый раздел":
         text = (
-            "🌐 *Международное сотрудничество:*\n"
-            "- США, Китай, Япония и другие страны\n"
-            "- Продвинутые учебные программы\n"
-            "- Привлечение иностранных специалистов"
+            "🧪 Раздел тестов:\n"
+            "- Начальный (A1-A2)\n"
+            "- Средний (B1-B2)\n"
+            "- Продвинутый (C1-C2)"
         )
-        bot.send_message(message.chat.id, text, parse_mode="Markdown")
-
-    elif message.text == "📍Расположение":
-        bot.send_message(message.chat.id, "📍 Университет: Ташкентская область, город Нурафшон.")
-
-    elif message.text == "📞 Связь":
-        bot.send_message(message.chat.id,
-                         "📞 Контакты:\n+998 (55) 888-55-55\n+998 95 182 71 17")
-
     else:
-        bot.send_message(message.chat.id, "Команда не распознана. Выберите из меню или введите /help.")
-
-# Qo‘shimcha buyruqlar uchun handlerlar
+        text = "Команда не распознана. Введите /help или выберите из меню."
+    bot.send_message(message.chat.id, text, parse_mode="Markdown")
 
 @bot.message_handler(commands=['help'])
 def help_command(message):
     lang = user_language.get(message.chat.id)
     if lang == "uz":
         help_text = (
-            "Yordam bo‘limi:\n"
-            "/start - Botni qayta ishga tushirish\n"
+            "Yordam buyruqlari:\n"
+            "/start - Botni ishga tushurish\n"
             "/help - Yordamni ko‘rsatish\n"
-            "/contact - Aloqa ma'lumotlari\n"
-            "/about - Universitet haqida qisqacha ma'lumot"
+            "/about - Bot haqida"
         )
     elif lang == "ru":
         help_text = (
-            "Справка:\n"
-            "/start - Перезапустить бота\n"
-            "/help - Показать помощь\n"
-            "/contact - Контактная информация\n"
-            "/about - Краткая информация об университете"
+            "Команды помощи:\n"
+            "/start - Запустить бота\n"
+            "/help - Помощь\n"
+            "/about - О боте"
         )
     else:
-        help_text = "Iltimos, avval tilni tanlang / Пожалуйста, выберите язык сначала."
+        help_text = "Iltimos, tilni tanlang / Пожалуйста, выберите язык."
     bot.send_message(message.chat.id, help_text)
-
-@bot.message_handler(commands=['contact'])
-def contact_command(message):
-    lang = user_language.get(message.chat.id)
-    if lang == "uz":
-        contact_text = "📞 Aloqa uchun:\n+998 (55) 888-55-55\n+998 95 182 71 17"
-    elif lang == "ru":
-        contact_text = "📞 Контакты:\n+998 (55) 888-55-55\n+998 95 182 71 17"
-    else:
-        contact_text = "Iltimos, avval tilni tanlang / Пожалуйста, выберите язык сначала."
-    bot.send_message(message.chat.id, contact_text)
 
 @bot.message_handler(commands=['about'])
 def about_command(message):
-    lang = user_language.get(message.chat.id)
-    if lang == "uz":
-        about_text = (
-            "⚙️ Cyber University — O‘zbekistonning raqamli kelajagiga yo‘l ochuvchi zamonaviy oliy ta’lim dargohi.\n"
-            "Prezident qarori PQ–14 (2025) asosida tashkil etilgan.\n"
-            "Ma'lumot: https://lex.uz/uz/docs/-7332592"
-        )
-    elif lang == "ru":
-        about_text = (
-            "⚙️ Cyber University — современное высшее учебное заведение, открывающее путь в цифровое будущее Узбекистана.\n"
-            "Создан на основании распоряжения Президента PQ–14 (2025).\n"
-            "Информация: https://lex.uz/uz/docs/-7332592"
-        )
-    else:
-        about_text = "Iltimos, avval tilni tanlang / Пожалуйста, выберите язык сначала."
-    bot.send_message(message.chat.id, about_text)
+    bot.send_message(message.chat.id, "Arabic Tester bot — arab tili bo‘yicha testlar va o‘quv xizmatlari uchun platforma.")
 
-# Umumiy handler
 @bot.message_handler(func=lambda m: True)
 def handle_message(message):
     lang = user_language.get(message.chat.id)
@@ -236,6 +153,6 @@ def handle_message(message):
     elif lang == "ru":
         russian_sections(message)
     else:
-        bot.send_message(message.chat.id, "Iltimos, avval tilni tanlang / Пожалуйста, выберите язык сначала.", reply_markup=language_keyboard())
+        bot.send_message(message.chat.id, "Tilni tanlang / Выберите язык:", reply_markup=language_keyboard())
 
 bot.infinity_polling()
