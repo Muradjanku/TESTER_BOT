@@ -6,30 +6,31 @@ from io import BytesIO
 from datetime import datetime
 
 bot = TeleBot(os.getenv("TELEGRAM_TOKEN"))
+
 user_scores = {}
 user_steps = {}
-user_language = {}
 user_data = {}
+user_language = {}
 
-# Test savollari qisqaroq namunalar
-questions_cefr = [
-    {"question": "أنا من ــــــ.", "options": ["فرنسا", "أمريكا", "ألمانيا", "مصر"], "answer": "b"},
-    {"question": "أنا ــــــ.", "options": ["طالب", "فرنسي", "طبيبة", "مهندس"], "answer": "b"},
-    {"question": "هو ــــــ أحمد.", "options": ["يعمل", "اسمه", "عنده", "يسكن"], "answer": "b"},
-    {"question": "ــــــ أنت فرنسي؟", "options": ["ما", "هل", "لماذا", "أين"], "answer": "b"},
-    {"question": "فاطمة ــــــ ولد.", "options": ["عندها", "عنده", "لديها", "عندهما"], "answer": "a"},
-    {"question": "أحمد ــــــ ولد وبنت.", "options": ["عندها", "عنده", "لدي", "لديهما"], "answer": "b"},
-    {"question": "بيت أحمد ــــــ.", "options": ["صغير", "جميل", "كبير", "جديد"], "answer": "c"},
-    {"question": "ــــــ بيت صغير.", "options": ["هذه", "هذا", "هؤلاء", "هنا"], "answer": "b"},
-    {"question": "ــــــ عندي سيارة.", "options": ["لا", "ليس", "لم", "لن"], "answer": "b"},
-    {"question": "محمد ــــــ في الجامعة.", "options": ["يدرس", "يعمل", "يسكن", "يذهب"], "answer": "b"},
-]
-
-# Qo'shimcha savollarni quyidagilar uchun shunday tuzing (to'ldiring o'zingiz):
-questions_at_tanal = questions_cefr * 2  # 20 ta savol uchun namuna (takrorlandi)
-questions_arabic_proficiency_30 = questions_cefr * 3  # 30 ta
-questions_arabic_proficiency_35 = questions_cefr * 3 + questions_cefr[:5]  # 35 ta
-questions_actfl = questions_cefr * 4  # 40 ta
+# Test to'plamlari va ularning savollari
+test_packs = {
+    "CEFR (10 ta test)": [
+        {"question": "أنا من ــــــ.", "options": ["فرنسا", "أمريكا", "ألمانيا", "مصر"], "answer": "b"},
+        # Qo'shimcha 9 ta savol shu yerda bo'lishi kerak
+    ],
+    "AT Tanal AL Arabi (20 ta test)": [
+        # 20 ta savol shu yerda
+    ],
+    "The Arabic Language Proficiency Test (30 ta test)": [
+        # 30 ta savol shu yerda
+    ],
+    "Arabic Proficiency Test (35 ta test)": [
+        # 35 ta savol shu yerda
+    ],
+    "American Council on the Teaching of Foreign Languages (ACTFL) (40 ta test)": [
+        # 40 ta savol shu yerda
+    ]
+}
 
 def language_keyboard():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -43,15 +44,11 @@ def main_menu_uz():
     markup.add("🎓 O‘quv tizimi", "💎 Premium obuna")
     return markup
 
-def test_type_keyboard():
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(
-        types.InlineKeyboardButton("1. CEFR (10 ta test)", callback_data="test_cefr"),
-        types.InlineKeyboardButton("2. AT Tanal AL Arabi (20 ta test)", callback_data="test_at_tanal"),
-        types.InlineKeyboardButton("3. The Arabic Language Proficiency Test (30 ta test)", callback_data="test_arabic_proficiency"),
-        types.InlineKeyboardButton("4. Arabic Proficiency Test (35 ta test)", callback_data="test_arabic_proficiency_35"),
-        types.InlineKeyboardButton("5. ACTFL (40 ta test)", callback_data="test_actfl")
-    )
+def tests_menu():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    for pack_name in test_packs.keys():
+        markup.add(pack_name)
+    markup.add("⬅️ Orqaga")
     return markup
 
 def generate_certificate(name, score, total_questions=40, proficiency_level="Pre-Intermediate (A2)"):
@@ -114,6 +111,7 @@ def start_command(message):
     user_language[message.chat.id] = None
     user_scores[message.chat.id] = 0
     user_steps[message.chat.id] = 0
+    user_data[message.chat.id] = {}
     bot.send_message(message.chat.id, "Tilni tanlang / Choose language:", reply_markup=language_keyboard())
 
 @bot.message_handler(func=lambda m: m.text in ["🇺🇿 O‘zbekcha", "🇷🇺 Русский"])
@@ -126,39 +124,26 @@ def language_selected(message):
         bot.send_message(message.chat.id, "Добро пожаловать в Arabic Tester бот!", reply_markup=main_menu_uz())
 
 @bot.message_handler(func=lambda m: m.text == "📝 Testni boshlash")
-def start_test(message):
-    bot.send_message(message.chat.id, "Test turini tanlang:", reply_markup=test_type_keyboard())
+def start_test_menu(message):
+    bot.send_message(message.chat.id, "Test to‘plamini tanlang:", reply_markup=tests_menu())
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("test_"))
-def test_type_selected(call):
-    chat_id = call.message.chat.id
-    test_type = call.data
-
-    if test_type == "test_cefr":
-        questions_list = questions_cefr
-    elif test_type == "test_at_tanal":
-        questions_list = questions_at_tanal
-    elif test_type == "test_arabic_proficiency":
-        questions_list = questions_arabic_proficiency_30
-    elif test_type == "test_arabic_proficiency_35":
-        questions_list = questions_arabic_proficiency_35
-    elif test_type == "test_actfl":
-        questions_list = questions_actfl
-    else:
-        bot.answer_callback_query(call.id, "Noto'g'ri tanlov")
-        return
-
-    user_steps[chat_id] = 0
+@bot.message_handler(func=lambda m: m.text in test_packs.keys())
+def select_test_pack(message):
+    chat_id = message.chat.id
+    selected_pack = message.text
+    user_data[chat_id]["questions"] = test_packs[selected_pack]
     user_scores[chat_id] = 0
-    user_data[chat_id] = {"questions": questions_list}
-
-    bot.answer_callback_query(call.id, "Test boshlandi!")
+    user_steps[chat_id] = 0
+    bot.send_message(chat_id, f"Test boshlandi: {selected_pack}\nHar bir savolga faqat a, b, c, yoki d deb javob bering.")
     send_question(chat_id)
+
+@bot.message_handler(func=lambda m: m.text == "⬅️ Orqaga")
+def back_to_main_menu(message):
+    bot.send_message(message.chat.id, "Asosiy menyu", reply_markup=main_menu_uz())
 
 def send_question(chat_id):
     step = user_steps.get(chat_id, 0)
     questions_list = user_data.get(chat_id, {}).get("questions", [])
-
     if step < len(questions_list):
         q = questions_list[step]
         options_text = "\n".join([f"{chr(97+i)}) {opt}" for i, opt in enumerate(q["options"])])
@@ -169,4 +154,42 @@ def send_question(chat_id):
 @bot.message_handler(func=lambda m: m.chat.id in user_steps)
 def handle_answer(message):
     chat_id = message.chat.id
-    step = user_steps.get(chat_id,
+    step = user_steps.get(chat_id, 0)
+    questions_list = user_data.get(chat_id, {}).get("questions", [])
+
+    if step >= len(questions_list):
+        bot.send_message(chat_id, "Test yakunlandi.")
+        return
+
+    user_answer = message.text.strip().lower()
+    correct_answer = questions_list[step]["answer"].lower()
+
+    if user_answer in ['a', 'b', 'c', 'd']:
+        if user_answer == correct_answer:
+            user_scores[chat_id] = user_scores.get(chat_id, 0) + 1
+
+        user_steps[chat_id] = step + 1
+
+        if user_steps[chat_id] < len(questions_list):
+            send_question(chat_id)
+        else:
+            bot.send_message(chat_id, "Test yakunlandi. Ismingizni kiriting, sertifikat yaratamiz:")
+            bot.register_next_step_handler(message, generate_and_send_certificate)
+    else:
+        bot.send_message(chat_id, "Iltimos, faqat a, b, c yoki d variantlaridan birini kiriting.")
+
+def generate_and_send_certificate(message):
+    chat_id = message.chat.id
+    name = message.text.strip() or "Foydalanuvchi"
+    score = user_scores.get(chat_id, 0)
+    total_questions = len(user_data.get(chat_id, {}).get("questions", []))
+    proficiency_level, _ = calculate_level(score, total_questions)
+
+    certificate_pdf = generate_certificate(name, score, total_questions, proficiency_level)
+    bot.send_document(chat_id, certificate_pdf)
+
+    user_scores.pop(chat_id, None)
+    user_steps.pop(chat_id, None)
+    user_data.pop(chat_id, None)
+
+bot.infinity_polling()
